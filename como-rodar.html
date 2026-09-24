@@ -1,0 +1,317 @@
+<meta charset="utf-8">
+<title>Rodando o GamePlay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Rajdhani:wght@600;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --ground: #F4F5FB;
+    --surface: #FFFFFF;
+    --ink: #11173D;
+    --muted: #4E5680;
+    --line: #DCDFF0;
+    --accent: #E51C44;
+    --accent-ink: #FFFFFF;
+    --code-ground: #0E1647;
+    --code-ink: #DDE3F0;
+    --code-muted: #9AA2CC;
+    --code-line: #243189;
+    --focus: #495BCC;
+    --display: "Rajdhani", "Arial Narrow", system-ui, sans-serif;
+    --text: "Inter", "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #0A1033;
+      --surface: #0E1647;
+      --ink: #DDE3F0;
+      --muted: #ABB1CC;
+      --line: #243189;
+      --accent: #F0405F;
+      --code-ground: #060A24;
+      --code-ink: #DDE3F0;
+      --code-muted: #9AA2CC;
+      --code-line: #1D2766;
+      --focus: #8F9BF0;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #0A1033;
+    --surface: #0E1647;
+    --ink: #DDE3F0;
+    --muted: #ABB1CC;
+    --line: #243189;
+    --accent: #F0405F;
+    --code-ground: #060A24;
+    --code-ink: #DDE3F0;
+    --code-muted: #9AA2CC;
+    --code-line: #1D2766;
+    --focus: #8F9BF0;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font: 16px/1.6 var(--text);
+    padding-inline: 20px;
+    padding-block: 40px 72px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 48px; }
+
+  header { display: grid; gap: 12px; }
+  .eyebrow {
+    font: 600 14px/1 var(--display);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  h1, h2 { font-family: var(--display); font-weight: 700; line-height: 1.1; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(32px, 6vw, 44px); }
+  h2 { font-size: 26px; }
+  p { margin: 0; max-width: 65ch; }
+  .lead { color: var(--muted); font-size: 17px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .facts span {
+    font: 500 13px/1 var(--mono);
+    padding: 7px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--muted);
+    background: var(--surface);
+  }
+
+  section { display: grid; gap: 16px; }
+  .note { color: var(--muted); font-size: 15px; }
+
+  .cmd {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--code-ground);
+    border: 1px solid var(--code-line);
+    border-radius: 8px;
+    padding: 10px 10px 10px 16px;
+    overflow-x: auto;
+  }
+  .cmd code {
+    flex: 1;
+    font: 500 15px/1.5 var(--mono);
+    color: var(--code-ink);
+    white-space: pre;
+  }
+  .cmd code::before { content: "> "; color: var(--code-muted); }
+  .cmd button {
+    flex: none;
+    font: 500 13px/1 var(--text);
+    color: var(--code-ink);
+    background: transparent;
+    border: 1px solid var(--code-line);
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  .cmd button:hover { border-color: var(--code-muted); }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  code.inline, kbd {
+    font: 500 0.88em var(--mono);
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  kbd { border-bottom-width: 2px; }
+  a { color: var(--accent); }
+
+  .steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; gap: 28px; }
+  .steps > li { counter-increment: step; display: grid; grid-template-columns: 36px 1fr; gap: 4px 16px; }
+  .steps > li::before {
+    content: counter(step);
+    grid-row: span 3;
+    width: 36px; height: 36px;
+    display: grid; place-items: center;
+    font: 700 18px/1 var(--display);
+    color: var(--accent-ink);
+    background: var(--accent);
+    border-radius: 8px;
+  }
+  .steps h3 { font: 600 17px/1.4 var(--text); margin: 6px 0 0; }
+  .steps li > p, .steps li > .cmd, .steps li > ul { grid-column: 2; }
+  .steps ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 6px; }
+
+  .fixes { margin: 0; display: grid; }
+  .fixes > div { display: grid; gap: 8px; padding-block: 16px; border-top: 1px solid var(--line); }
+  .fixes > div:last-child { border-bottom: 1px solid var(--line); }
+  .fixes dt { font-weight: 600; }
+  .fixes dd { margin: 0; color: var(--muted); display: grid; gap: 10px; }
+
+  .scope { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+  .scope h3 { font: 700 18px/1.2 var(--display); margin: 0 0 8px; letter-spacing: 0.02em; }
+  .scope ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+
+  .map { overflow-x: auto; }
+  .map table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  .map td { padding: 10px 12px 10px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  .map td:first-child { font-family: var(--mono); font-size: 14px; white-space: nowrap; color: var(--accent); }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Programação de App · GamePlay</span>
+    <h1>Como rodar o GamePlay no seu PC</h1>
+    <p class="lead">O projeto vem no <strong>gameplay.zip</strong>, sem a pasta <code class="inline">node_modules</code>: as dependências são baixadas no passo 3. Leva poucos minutos.</p>
+    <div class="facts">
+      <span>Expo SDK 57</span>
+      <span>React Native 0.86</span>
+      <span>TypeScript</span>
+    </div>
+  </header>
+
+  <section aria-labelledby="req">
+    <h2 id="req">Antes de começar</h2>
+    <p>É preciso ter o <strong>Node.js 20.19.4+, 22.13+ ou 24.3+</strong> (exigência do React Native 0.86). Para conferir a versão:</p>
+    <div class="cmd"><code>node -v</code><button type="button" data-copy>Copiar</button></div>
+    <p class="note">Se o comando não existir ou a versão for mais antiga, instale a versão LTS em <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a> e abra um terminal novo. Para ver no celular, instale o app <strong>Expo Go</strong> (Play Store ou App Store).</p>
+  </section>
+
+  <section aria-labelledby="steps">
+    <h2 id="steps">Passo a passo</h2>
+    <ol class="steps">
+      <li>
+        <h3>Extraia o zip</h3>
+        <p>Botão direito em <strong>gameplay.zip</strong> → <em>Extrair tudo</em>. Vai surgir a pasta <code class="inline">gameplay</code>.</p>
+      </li>
+      <li>
+        <h3>Abra um terminal dentro da pasta</h3>
+        <p>No Explorador de Arquivos, entre na pasta <code class="inline">gameplay</code>, clique na barra de endereço, digite <code class="inline">cmd</code> e aperte Enter. No VS Code: <em>Arquivo → Abrir pasta</em> e depois <em>Terminal → Novo terminal</em>.</p>
+      </li>
+      <li>
+        <h3>Instale as dependências</h3>
+        <div class="cmd"><code>npm install</code><button type="button" data-copy>Copiar</button></div>
+      </li>
+      <li>
+        <h3>Inicie o projeto</h3>
+        <div class="cmd"><code>npx expo start</code><button type="button" data-copy>Copiar</button></div>
+      </li>
+      <li>
+        <h3>Abra o app</h3>
+        <ul>
+          <li><strong>Celular:</strong> escaneie o QR code do terminal com o Expo Go (Android) ou com a câmera (iPhone). O celular precisa estar no mesmo Wi-Fi do PC.</li>
+          <li><strong>Navegador:</strong> aperte <kbd>w</kbd> no terminal.</li>
+          <li><strong>Emulador Android</strong> (se tiver o Android Studio): aperte <kbd>a</kbd>.</li>
+        </ul>
+      </li>
+    </ol>
+    <p class="note">Roteiro para testar: <strong>Entrar com Discord</strong> leva à Home → toque numa partida para abrir os Detalhes → a seta volta → o botão <strong>+</strong> abre o Agendar → toque nas categorias para ver a troca de estado.</p>
+  </section>
+
+  <section aria-labelledby="fix">
+    <h2 id="fix">Se algo der errado</h2>
+    <dl class="fixes">
+      <div>
+        <dt>“npm” ou “npx” não é reconhecido</dt>
+        <dd>O Node não está instalado ou o terminal foi aberto antes da instalação. Instale o Node LTS e abra um terminal novo.</dd>
+      </div>
+      <div>
+        <dt>“A execução de scripts foi desabilitada neste sistema”</dt>
+        <dd>É uma restrição do PowerShell. Use o Prompt de Comando (<code class="inline">cmd</code>), como no passo 2.</dd>
+      </div>
+      <div>
+        <dt>Aviso “EBADENGINE” ou erro de versão no npm install</dt>
+        <dd>O Node está numa versão antiga. Atualize para a LTS atual.</dd>
+      </div>
+      <div>
+        <dt>O celular não abre o projeto ou fica carregando</dt>
+        <dd>
+          <span>Confira se PC e celular estão no mesmo Wi-Fi e, se o Windows perguntar sobre o firewall, permita o Node.js. Se a rede bloquear a conexão (comum em redes de faculdade), use o modo túnel e aceite instalar o <code class="inline">@expo/ngrok</code>:</span>
+          <div class="cmd"><code>npx expo start --tunnel</code><button type="button" data-copy>Copiar</button></div>
+        </dd>
+      </div>
+      <div>
+        <dt>O Expo Go diz que o SDK do projeto é incompatível</dt>
+        <dd>
+          <span>O Expo Go só roda a versão mais recente do SDK. Atualize o projeto ou use a versão do navegador (<kbd>w</kbd>):</span>
+          <div class="cmd"><code>npx expo install expo@latest --fix</code><button type="button" data-copy>Copiar</button></div>
+        </dd>
+      </div>
+      <div>
+        <dt>“Port 8081 is being used”</dt>
+        <dd>Responda <kbd>Y</kbd> para usar outra porta.</dd>
+      </div>
+      <div>
+        <dt>Tela branca ou erro estranho depois de mexer nos arquivos</dt>
+        <dd>
+          <span>Reinicie limpando o cache:</span>
+          <div class="cmd"><code>npx expo start -c</code><button type="button" data-copy>Copiar</button></div>
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="scope">
+    <h2 id="scope">O que foi entregue</h2>
+    <div class="scope">
+      <div>
+        <h3>Implementado</h3>
+        <ul>
+          <li>Login</li>
+          <li>Home (as categorias filtram as partidas)</li>
+          <li>Detalhes do servidor</li>
+          <li>Agendar com servidor selecionado e troca de estado ao selecionar a categoria</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Fora do escopo do enunciado</h3>
+        <ul>
+          <li>Modal com a lista de servidores</li>
+          <li>Login real com o Discord</li>
+          <li>Salvar o agendamento</li>
+        </ul>
+        <p class="note">Os dados de exemplo ficam em <code class="inline">src/data/mock.ts</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="map">
+    <h2 id="map">Onde está cada coisa</h2>
+    <div class="map">
+      <table>
+        <tbody>
+          <tr><td>src/screens/</td><td>as quatro telas, cada uma com <code class="inline">index.tsx</code> e <code class="inline">styles.ts</code></td></tr>
+          <tr><td>src/components/</td><td>componentes reutilizáveis (Button, Header, CategorySelect…)</td></tr>
+          <tr><td>src/global/styles/theme.ts</td><td>cores, degradês e fontes tirados do Figma</td></tr>
+          <tr><td>src/routes/</td><td>navegação entre as telas</td></tr>
+          <tr><td>src/data/</td><td>categorias e dados de exemplo</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+  document.querySelectorAll('[data-copy]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var code = button.parentElement.querySelector('code');
+      var text = code.textContent;
+      function selectText() {
+        var range = document.createRange();
+        range.selectNodeContents(code);
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        button.textContent = 'Selecionado — Ctrl+C';
+      }
+      var done = function () { button.textContent = 'Copiado'; };
+      try {
+        navigator.clipboard.writeText(text).then(done, selectText);
+      } catch (e) {
+        selectText();
+      }
+      setTimeout(function () { button.textContent = 'Copiar'; }, 1800);
+    });
+  });
+</script>
